@@ -64,7 +64,9 @@
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FCFBF9",
     "backgroundColorTop": "#FCFBF9",
-    "backgroundColorBottom": "#FCFBF9"
+    "backgroundColorBottom": "#FCFBF9",
+    "animationType": "slide-in-bottom",
+    "animationDuration": 400
   },
   "tabBar": {
     "color": "#9B9B9B",

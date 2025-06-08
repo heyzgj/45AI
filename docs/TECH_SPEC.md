@@ -13,7 +13,7 @@ The system employs a client-server architecture with a decoupled AI processing s
                                              +--> `ComfyUI API (GCP)` (for image generation)
 
 ## 3. Components
-- **Frontend:** A UniBest (uni-app) project, responsible for all UI, state management, and client-side interactions. It communicates with the backend via a RESTful API and is responsible for implementing the sophisticated animations and transitions defined in the Style Guide.
+- **Frontend:** A UniBest (uni-app) project, responsible for all UI, state management, and client-side interactions. It communicates with the backend via a RESTful API and is responsible for implementing the sophisticated animations and transitions defined in the Style Guide. It uses the `wot-design-uni` component library to ensure a consistent and high-quality user interface.
 - **Backend:** A Go API server using the Gin framework, deployed on WeChat Cloud Hosting. Its responsibilities include:
   - User authentication (JWT-based).
   - Serving template metadata.
@@ -46,7 +46,7 @@ The system employs a client-server architecture with a decoupled AI processing s
 
 ## 6. Key Technical Decisions
 - **Language & Framework (Backend):** Go with Gin. Chosen for its high performance, concurrency, and low resource footprint, which is ideal for an API gateway that orchestrates multiple services.
-- **Framework (Frontend):** UniBest. Chosen to meet the requirement of a single codebase for both WeChat Mini Program and iOS.
+- **Framework (Frontend):** UniBest. Chosen to meet the requirement of a single codebase for both WeChat Mini Program and iOS. It utilizes the `wot-design-uni` component library.
 - **Auth Method:** JWT (JSON Web Tokens). Stateless authentication is a good fit for the microservice-oriented architecture and simplifies scaling the backend.
 - **AI Deployment:** Decoupled service on GCP. Separating the GPU-intensive ComfyUI workload from the main business logic API allows for independent scaling and resource management. GCP is chosen for its robust GPU offerings.
 - **Deployment:** WeChat Cloud Hosting for the backend/DB. This simplifies integration with WeChat login and payment services.

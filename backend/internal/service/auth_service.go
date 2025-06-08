@@ -10,6 +10,9 @@ type AuthService interface {
 	// LoginWithWechat authenticates a user with WeChat code
 	LoginWithWechat(ctx context.Context, code string) (*model.User, string, error)
 	
+	// GenerateToken generates a new JWT for a given user ID
+	GenerateToken(userID uint) (string, error)
+	
 	// ValidateToken validates a JWT token and returns the user ID
 	ValidateToken(ctx context.Context, token string) (int64, error)
 	
@@ -18,11 +21,4 @@ type AuthService interface {
 	
 	// GetUserFromToken retrieves user information from a JWT token
 	GetUserFromToken(ctx context.Context, token string) (*model.User, error)
-}
-
-// WechatLoginResponse represents the response from WeChat login
-type WechatLoginResponse struct {
-	OpenID     string `json:"openid"`
-	SessionKey string `json:"session_key"`
-	UnionID    string `json:"unionid,omitempty"`
 } 

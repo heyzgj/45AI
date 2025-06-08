@@ -64,18 +64,15 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-// Emits
-const emit = defineEmits<{
-  click: [template: Template]
-}>()
-
 // State
 const error = ref(false)
 
 // Methods
 const handleClick = () => {
   if (!props.loading && !error.value) {
-    emit('click', props.template)
+    uni.navigateTo({
+      url: `/pages/template-detail/index?id=${props.template.id}`
+    });
   }
 }
 

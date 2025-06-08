@@ -11,6 +11,10 @@ import (
 	"time"
 
 	"github.com/45ai/backend/internal/config"
+	"github.com/45ai/backend/internal/handler"
+	"github.com/45ai/backend/internal/middleware"
+	"github.com/45ai/backend/internal/repository"
+	"github.com/45ai/backend/internal/service"
 	"github.com/45ai/backend/pkg/database"
 	"github.com/gin-gonic/gin"
 )
@@ -108,21 +112,58 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 		})
 	})
 
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(db.DB)
+	wechatRepo := repository.NewWechatRepository(cfg.WeChat)
+	templateRepo := repository.NewTemplateRepository(db.DB)
+	transactionRepo := repository.NewTransactionRepository(db.DB)
+	comfyuiRepo := repository.NewMockComfyUIRepository()
+
+	// Initialize services
+	authService := service.NewAuthService(cfg.JWT, userRepo, wechatRepo)
+	templateService := service.NewTemplateService(templateRepo)
+	userService := service.NewUserService(userRepo)
+	transactionService := service.NewTransactionService(transactionRepo)
+	contentSafetyService := service.NewMockContentSafetyService()
+	queueService := service.NewInMemoryQueueService()
+	generationService := service.NewGenerationService(contentSafetyService, userRepo, transactionRepo, templateRepo, comfyuiRepo)
+
+	// Initialize handlers
+	authHandler := handler.NewAuthHandler(authService)
+	templateHandler := handler.NewTemplateHandler(templateService)
+	userHandler := handler.NewUserHandler(userService, transactionService)
+	generationHandler := handler.NewGenerationHandler(generationService, queueService)
+
+	// Initialize middleware
+	authMiddleware := middleware.AuthMiddleware(authService)
+
 	// API v1 routes
 	v1 := router.Group("/api/v1")
 	{
-		// Placeholder for future routes
-		v1.GET("/ping", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
-		})
-		
-		// TODO: Add more routes here
-		// auth := v1.Group("/auth")
-		// templates := v1.Group("/templates")
-		// generation := v1.Group("/generate")
-		// billing := v1.Group("/billing")
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/login", authHandler.Login)
+		}
+
+		templates := v1.Group("/templates")
+		{
+			templates.GET("", templateHandler.GetAll)
+			templates.GET("/:id", templateHandler.GetByID)
+		}
+
+		me := v1.Group("/me")
+		me.Use(authMiddleware)
+		{
+			me.GET("", userHandler.GetProfile)
+			me.PUT("", userHandler.UpdateProfile)
+			me.GET("/transactions", userHandler.GetTransactions)
+		}
+
+		generation := v1.Group("/generate")
+		generation.Use(authMiddleware)
+		{
+			generation.POST("", generationHandler.GenerateImage)
+		}
 	}
 
 	return router

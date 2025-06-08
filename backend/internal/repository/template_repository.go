@@ -13,6 +13,9 @@ type TemplateRepository interface {
 	// GetByID retrieves a template by ID
 	GetByID(ctx context.Context, id int) (*model.Template, error)
 	
+	// GetByName retrieves a template by name
+	GetByName(ctx context.Context, name string) (*model.Template, error)
+	
 	// Create creates a new template
 	Create(ctx context.Context, template *model.Template) error
 	

@@ -16,7 +16,10 @@
     "lib": ["esnext", "dom"],
     "types": [
       "@dcloudio/types",
-      "@types/node"
+      "@types/node",
+      "vue",
+      "pinia",
+      "wot-design-uni/global"
     ]
   },
   "include": [
