@@ -1,112 +1,60 @@
-## `docs/PRD.md` — Strict Template (11 fixed H1 headings)
+# Product Requirements Document: 45AI
 
-<!--
-agentdoc-starter – PRD template v1.2  
-MUST keep exactly 11 top-level headings (# 0–10).  
-Fill in every {{...}} placeholder with specific details.  
-If starting from just an idea, see "From Idea to PRD" guidance below.
--->
+## 1. Executive Summary
+45AI is a cross-platform AI image generation app for iOS and WeChat, designed to solve the problem of overly complex and low-quality AI art tools. It targets young, aesthetically-minded women in China who are accustomed to polished photo editing apps. The core solution is a one-click experience: users upload a single selfie and select a professionally designed template to receive beautiful, high-quality AI-generated portraits instantly, monetized through a simple credit-based system.
 
-# 0 One-Sentence Mission
-{{ ≤ 20 English words describing the product’s main objective }}
+## 2. Target Audience & Problem Statement
+- **Primary User:** Young women in China (18-35) who are active on social media, use apps like 醒图 (Xingtu) and 美图秀秀 (Meitu), and value aesthetic quality and convenience.
+- **Problem:** Existing AI image generators are often cumbersome, requiring multiple photo uploads, complex text prompts, or long waiting times. The resulting styles frequently fail to meet the user's aesthetic expectations for shareable, high-quality portraits.
 
-# 1 Problem Statement
-- **Pain:** {{ one sentence on the core user pain point }}  
-- **Impact:** {{ one sentence on why it matters }}  
-- **Gap:** {{ one sentence on why current solutions fall short }}  
-<!-- Using a 3-part Pain/Impact/Gap format reduces solution bias -->
+## 3. Core Features & User Stories
 
-# 2 Personas & Context
-| Persona       | Goal                      | Frustration            |
-| ------------- | ------------------------- | ---------------------- |
-| {{ User Type }} | {{ What they want to achieve }} | {{ What blocks them today }} |
-<!-- Define primary user roles and their context to ground the requirements. -->
+### 3.1 Feature: Template-Based Image Generation
+- **As a** user, **I want to** browse a gallery of pre-made visual styles (templates), **so that** I can easily find an aesthetic I love without needing to describe it.
+- **As a** user, **I want to** upload a single selfie and select a template, **so that** the AI can generate a stylized image for me with one click.
+- **As a** user, **I want to** save the generated high-quality images to my phone's photo album, **so that** I can easily share them on my social media accounts.
 
-# 3 End-to-End Flow
-```mermaid
-flowchart LR
-    {{ A[Start] --> B[Step 1] --> C[Step 2] --> D[End] }}
-````
+### 3.2 Feature: Credit ("胶卷") Monetization System
+- **As a** user, **I want to** clearly see how many credits each template costs, **so that** I can make an informed decision before generating an image.
+- **As a** user, **I want to** purchase packs of credits through a simple and secure payment process (WeChat Pay/Apple IAP), **so that** I can continue using the service when I run out.
+- **As a** user, **I want to** view my purchase and spending history, **so that** I can track my consumption on the platform.
 
-<!-- Use a simple flowchart for the user journey or system flow. Formal Mermaid syntax is AI-parsable -->
+### 3.3 Feature: Content Safety & Moderation
+- **As a** user, **I want to** trust that the platform is a safe environment, **so that** I can upload my photo without being exposed to inappropriate content from others.
+- **As a** platform operator, **I want** all user-uploaded images to be automatically scanned for unsafe content, **so that** the platform remains compliant with regulations and protects its brand reputation.
 
-# 4 Functional Requirements
+## 4. Non-Functional Requirements (NFRs)
+- **Performance:**
+  - Backend API endpoints (non-generation) must respond in under 200ms.
+  - The P95 end-to-end image generation time (from upload confirmation to image display) must be under 30 seconds.
+  - Frontend animations must maintain a smooth frame rate (>55 FPS) on target devices.
+- **Scalability:**
+  - The system must be architected to support 1,000 concurrent image generation requests in v1.
+- **Security:**
+  - All user data (especially PII) must be encrypted at rest in the database.
+  - All network communication must use HTTPS.
+  - All user-uploaded images must be processed by a content safety moderation API before being sent to the generation model.
+- **Accessibility:**
+  - Frontend must provide minimum tap targets of 48x48px for all interactive elements.
+  - Text color contrast must meet WCAG 2.1 AA standards for readability.
 
-<!-- List all key product features as F##, each with clear Acceptance Criteria to avoid ambiguity. -->
+## 5. Scope: In & Out
+- **In Scope for v1:**
+  - WeChat Mini Program and native iOS application.
+  - User authentication via WeChat Login.
+  - A credit-based ("胶卷") monetization system.
+  - Image generation based on a curated library of pre-defined templates.
+- **Out of Scope for v1:**
+  - User-defined text prompts.
+  - Social features (e.g., in-app profiles, sharing, following).
+  - Storing user-generated images or upload history long-term.
+  - A web or Android version.
 
-| ID  | Title              | Acceptance Criteria (AC)                  | Depends | ComplexityGuess |
-| --- | ------------------ | ----------------------------------------- | ------- | --------------- |
-| F01 | {{ Feature name }} | {{ measurable AC: what done looks like }} | –       | {{ 1-5 }}       |
-| F02 | {{ Next feature }} | {{ AC: expected behavior or outcome }}    | F01     | {{ 1-5 }}       |
-
-<!-- Each feature’s AC should be testable (e.g. “when X, the system does Y”). Depends links F-IDs. Complexity 1 (trivial) to 5 (very complex) helps task planning. -->
-
-# 5 Visual Style Guide
-
-## 5.1 Typography
-
-* **Headings:** {{ Font family, weight, size }}
-* **Body:** {{ Font and size for regular text }}
-
-## 5.2 Color Palette
-
-| Token          | Hex           | Usage                          |
-| -------------- | ------------- | ------------------------------ |
-| {{ Primary }}  | {{ #XXXXXX }} | {{ e.g. Buttons, Links }}      |
-| {{ Secondary}} | {{ #YYYYYY }} | {{ e.g. Background, Accents }} |
-
-## 5.3 Iconography & Motion
-
-* **Icons:** {{ e.g. outline style, 1.5px stroke }}
-* **Animations:** {{ e.g. duration ≤ 200ms, easing }}
-
-<!-- If a UI is involved, specify the look & feel to guide front-end implementation. Otherwise, state “N/A” if purely back-end. -->
-
-# 6 Non-Functional Reqs
-
-* {{ Performance target (e.g. P95 latency < 500ms) }}
-* {{ Security/Compliance (e.g. GDPR, OWASP top 10) }}
-* {{ Scalability or Uptime needs }}
-
-<!-- Explicit non-functional requirements prevent the AI from overlooking these important constraints. -->
-
-# 7 Tech & Integration
-
-| Area         | Choice                   | Rationale                     | Version (if any)     |
-| ------------ | ------------------------ | ----------------------------- | -------------------- |
-| Frontend     | {{ e.g. React or N/A }}  | {{ Why this tech (or none) }} | {{ n/a or version }} |
-| Backend      | {{ e.g. Flask/FastAPI }} | {{ Reason for this choice }}  | {{ version }}        |
-| Database     | {{ e.g. PostgreSQL }}    | {{ Why and how it’s used }}   | {{ version }}        |
-| Auth         | {{ e.g. OAuth / JWT }}   | {{ How users auth }}          | {{ version }}        |
-| External API | {{ e.g. Twitter API }}   | {{ Integrations needed }}     | {{ version }}        |
-
-<!-- List major tech components so the agent doesn’t hallucinate choices. Include rationale and versions to lock down the stack. -->
-
-# 8 Constraints & Risks
-
-* {{ Constraint example: “OpenAI API rate limit of 3 requests/minute” }}
-* {{ Constraint example: “Mobile-first design required” }}
-* {{ Risk example: “Potential data bias in ML model predictions” }}
-
-<!-- State known constraints (business, technical, or legal) and project risks. This guides the AI to respect boundaries. -->
-
-# 9 Out-of-Scope (Post v1)
-
-* {{ Feature or aspect explicitly not to be addressed in this release }}
-* {{ e.g. “No Android app in v1” or “Analytics dashboard excluded” }}
-
-<!-- By listing out-of-scope items, the agent will avoid spending effort on them or prematurely optimizing for them. -->
-
-# 10 Glossary
-
-| Term               | Definition                               |
-| ------------------ | ---------------------------------------- |
-| {{ Domain Term }}  | {{ Brief explanation for clarity }}      |
-| {{ Abbreviation }} | {{ What it stands for in this context }} |
-
-<!--
-✅ **From Idea to PRD:** If you started with only a rough idea, you can use an AI assistant to expand it into the above sections.
-For example, describe the idea (“a habit-tracking mobile app for teams”) and ask Claude or ChatGPT to help draft each section of this PRD template.
-Iterate with the AI to refine details (especially Functional Requirements and Acceptance Criteria).
-The structured headings ensure the model stays on track and avoids inventing unspecified features. Fill in and review all sections before running /INIT.
--->
+## 6. Assumptions & Dependencies
+- **Assumptions:**
+  - Users have a strong preference for simplicity and are willing to pay for a high-quality, convenient experience.
+  - The aesthetic quality and trendiness of the templates are the primary drivers for user adoption and retention.
+- **Dependencies:**
+  - Relies on a self-hosted ComfyUI API deployed on GCP for the core image generation task.
+  - Relies on a third-party Content Safety API (e.g., Tencent Cloud, Volcano Engine) for image moderation.
+  - Relies on platform-native services (WeChat SDK, Apple StoreKit) for authentication and In-App Purchases.

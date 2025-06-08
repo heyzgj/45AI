@@ -1,0 +1,389 @@
+// 45AI Base Component Styles
+// Implementing the premium, soft aesthetic
+
+@import './variables.scss';
+@import './animations.scss';
+
+// ====================
+// Buttons
+// ====================
+
+.btn {
+  // Base button styles
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-family-base;
+  font-size: $font-size-body;
+  font-weight: $font-weight-semibold;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all $duration-fast $ease-custom;
+  
+  // Ensure minimum tap target
+  min-height: $tap-target-min;
+  min-width: $tap-target-min;
+  
+  // Disabled state
+  &:disabled,
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Primary Button
+.btn-primary {
+  @extend .btn;
+  background: $color-primary;
+  color: #FFFFFF;
+  padding: 14px 32px;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-primary;
+  
+  &:hover:not(:disabled) {
+    background: darken($color-primary, 5%);
+    box-shadow: 0 6px 16px rgba(232, 155, 147, 0.4);
+    transform: translateY(-1px);
+  }
+  
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+    box-shadow: 0 2px 8px rgba(232, 155, 147, 0.3);
+  }
+  
+  // Gradient variant
+  &.gradient {
+    background: $color-gradient;
+  }
+}
+
+// Secondary Button
+.btn-secondary {
+  @extend .btn;
+  background: transparent;
+  color: $color-primary;
+  padding: 14px 32px;
+  border: 1px solid $color-primary;
+  border-radius: $radius-lg;
+  
+  &:hover:not(:disabled) {
+    background: rgba($color-primary, 0.05);
+    border-color: darken($color-primary, 5%);
+    transform: translateY(-1px);
+  }
+  
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+// Ghost Button
+.btn-ghost {
+  @extend .btn;
+  background: transparent;
+  color: $color-text;
+  padding: 12px 24px;
+  border-radius: $radius-lg;
+  
+  &:hover:not(:disabled) {
+    background: rgba($color-text, 0.05);
+  }
+  
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+// Button Sizes
+.btn-small {
+  padding: 8px 16px;
+  font-size: $font-size-caption;
+  min-height: 36px;
+}
+
+.btn-large {
+  padding: 18px 40px;
+  font-size: 18px;
+  min-height: 56px;
+}
+
+// Icon Button
+.btn-icon {
+  @extend .btn;
+  padding: 12px;
+  background: transparent;
+  color: $color-text;
+  border-radius: $radius-full;
+  
+  &:hover:not(:disabled) {
+    background: rgba($color-text, 0.05);
+  }
+  
+  &:active:not(:disabled) {
+    transform: scale(0.9);
+  }
+}
+
+// ====================
+// Cards
+// ====================
+
+.card {
+  background: $color-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  box-shadow: $shadow-soft;
+  padding: $spacing-lg;
+  transition: all $duration-fast $ease-custom;
+  
+  &.interactive {
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-hover;
+    }
+    
+    &:active {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: $shadow-hover;
+    }
+  }
+}
+
+// Card Variants
+.card-elevated {
+  @extend .card;
+  box-shadow: $shadow-hover;
+}
+
+.card-bordered {
+  @extend .card;
+  box-shadow: none;
+  border: 2px solid $color-secondary;
+}
+
+// ====================
+// Form Elements
+// ====================
+
+// Input Base
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: $font-family-base;
+  font-size: $font-size-body;
+  color: $color-text;
+  background: $color-surface;
+  border: 1px solid $border-color;
+  border-radius: $radius-sm;
+  outline: none;
+  transition: all $duration-fast $ease-custom;
+  
+  &::placeholder {
+    color: $color-text-subtle;
+  }
+  
+  &:hover {
+    border-color: darken($border-color, 10%);
+  }
+  
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+  
+  &:disabled {
+    background: $color-bg;
+    cursor: not-allowed;
+  }
+}
+
+// Textarea
+.textarea {
+  @extend .input;
+  min-height: 120px;
+  resize: vertical;
+}
+
+// ====================
+// Tags & Chips
+// ====================
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: $font-size-caption;
+  background: $color-secondary;
+  color: $color-text;
+  border-radius: $radius-full;
+  transition: all $duration-fast $ease-custom;
+  
+  &.primary {
+    background: $color-primary;
+    color: white;
+  }
+  
+  &.outline {
+    background: transparent;
+    border: 1px solid $color-secondary;
+  }
+}
+
+// ====================
+// Loading Components
+// ====================
+
+.loading-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl;
+  
+  .loading-blob {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, $color-secondary, $color-primary);
+    border-radius: 50%;
+    animation: pulseSoft 2s $ease-custom infinite;
+    filter: blur(1px);
+  }
+  
+  .loading-text {
+    margin-top: $spacing-lg;
+    font-size: $font-size-body;
+    color: $color-text-subtle;
+    animation: fadeIn 0.6s $ease-custom;
+  }
+}
+
+// ====================
+// Navigation
+// ====================
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: $font-size-body;
+  color: $color-text-subtle;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all $duration-fast $ease-custom;
+  
+  &:hover {
+    color: $color-text;
+  }
+  
+  &.active {
+    color: $color-primary;
+    border-bottom-color: $color-primary;
+  }
+}
+
+// ====================
+// Dividers
+// ====================
+
+.divider {
+  height: 1px;
+  background: $border-color;
+  margin: $spacing-lg 0;
+  
+  &.vertical {
+    width: 1px;
+    height: auto;
+    margin: 0 $spacing-lg;
+  }
+  
+  &.dashed {
+    background: none;
+    border-top: 1px dashed $border-color;
+  }
+}
+
+// ====================
+// Overlays
+// ====================
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-modal-backdrop;
+  animation: fadeIn $duration-fast $ease-custom;
+}
+
+// ====================
+// Utility Classes
+// ====================
+
+// Text Colors
+.text-primary { color: $color-primary; }
+.text-secondary { color: $color-secondary; }
+.text-subtle { color: $color-text-subtle; }
+.text-white { color: #FFFFFF; }
+
+// Background Colors
+.bg-primary { background-color: $color-primary; }
+.bg-secondary { background-color: $color-secondary; }
+.bg-surface { background-color: $color-surface; }
+.bg-alabaster { background-color: $color-bg; }
+
+// Spacing Utilities
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+.p-xl { padding: $spacing-xl; }
+
+.m-xs { margin: $spacing-xs; }
+.m-sm { margin: $spacing-sm; }
+.m-md { margin: $spacing-md; }
+.m-lg { margin: $spacing-lg; }
+.m-xl { margin: $spacing-xl; }
+
+// Text Alignment
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+// Display Utilities
+.d-none { display: none; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-inline-flex { display: inline-flex; }
+
+// Flex Utilities
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+} 
