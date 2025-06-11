@@ -35,7 +35,7 @@ Generous spacing is the foundation of our minimalist aesthetic.
 - **Card Padding:** 16px to 24px internally, depending on content.
 - **Layout Principle:** Prioritize whitespace. Do not crowd elements together.
 
-## 5. Components
+## 5. Components(we use wotui in this project as part of UniBest)
 ### 5.1 Button
 - **Primary:** Background: `--color-primary`. Text: `#FFF`. Radius: `24px` (pill-shaped). Shadow: `0 4px 12px rgba(232, 155, 147, 0.3)`. A soft glow from its own color.
 - **Secondary:** Border: `1px solid --color-primary`. Background: `transparent`. Text: `--color-primary`. Radius: `24px`. No shadow.

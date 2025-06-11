@@ -22,6 +22,17 @@ func NewWechatRepository(cfg config.WeChatConfig) WechatRepository {
 }
 
 func (r *wechatRepositoryImpl) Code2Session(code string) (*model.WechatLoginResponse, error) {
+	// Development testing: Allow test codes that start with "test_"
+	// This simulates WeChat's API response for development testing
+	if len(code) > 5 && code[:5] == "test_" {
+		// Generate a unique OpenID based on the test code
+		return &model.WechatLoginResponse{
+			OpenID:  fmt.Sprintf("test_openid_%s", code[5:]), // Use code suffix as unique identifier
+			UnionID: fmt.Sprintf("test_union_%s", code[5:]),
+		}, nil
+	}
+
+	// Production: Use real WeChat API
 	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
 		r.cfg.AppID, r.cfg.AppSecret, code)
 

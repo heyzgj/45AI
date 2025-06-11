@@ -5,30 +5,64 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { defineComponent } from 'vue'
+import { useUserStore } from '../../store/user'
 
 export default defineComponent({
   setup() {
-    const authStore = useAuthStore();
+    const userStore = useUserStore()
 
-    const handleLogin = () => {
-      uni.login({
-        provider: 'weixin',
-        success: (res) => {
-          authStore.login(res.code);
-        },
-        fail: (err) => {
-          console.error('Login failed:', err);
-        },
-      });
-    };
+    const handleLogin = async () => {
+      try {
+        // Check if we're in development mode (H5)
+        // #ifdef H5
+        // For development, create a test user without using mock authentication
+        // This simulates a proper WeChat login flow
+        const testCode = `test_${Date.now()}_${Math.random().toString(36).substring(7)}`
+        await userStore.login(testCode)
+        // Navigate to gallery page after successful login
+        uni.switchTab({ url: '/pages/gallery/index' })
+        // #endif
+
+        // #ifndef H5
+        // Use real WeChat login for production
+        uni.login({
+          provider: 'weixin',
+          success: async (res) => {
+            try {
+              await userStore.login(res.code)
+              uni.switchTab({ url: '/pages/gallery/index' })
+            } catch (error) {
+              console.error('Login failed:', error)
+              uni.showToast({
+                title: 'Login failed',
+                icon: 'none',
+              })
+            }
+          },
+          fail: (err) => {
+            console.error('Login failed:', err)
+            uni.showToast({
+              title: 'Login failed',
+              icon: 'none',
+            })
+          },
+        })
+        // #endif
+      } catch (error) {
+        console.error('Login failed:', error)
+        uni.showToast({
+          title: 'Login failed',
+          icon: 'none',
+        })
+      }
+    }
 
     return {
       handleLogin,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped>
@@ -56,4 +90,4 @@ export default defineComponent({
   transform: scale(0.97);
   box-shadow: 0 2px 6px rgba(232, 155, 147, 0.3);
 }
-</style> 
+</style>

@@ -1,33 +1,23 @@
 <template>
-  <view 
-    class="loading-animation"
-    :class="[`variant-${variant}`, `size-${size}`]"
-  >
+  <view class="loading-animation" :class="[`variant-${variant}`, `size-${size}`]">
     <!-- Dots Variant -->
     <view v-if="variant === 'dots'" class="loading-dots">
       <view class="dot"></view>
       <view class="dot"></view>
       <view class="dot"></view>
     </view>
-    
+
     <!-- Blob Variant -->
     <view v-else-if="variant === 'blob'" class="loading-blob-container">
       <view class="loading-blob"></view>
     </view>
-    
+
     <!-- Progress Variant -->
     <view v-else-if="variant === 'progress'" class="loading-progress">
       <view class="progress-circle">
         <svg viewBox="0 0 100 100" class="progress-svg">
           <!-- Background circle -->
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="#F3D9D7"
-            stroke-width="6"
-          />
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#F3D9D7" stroke-width="6" />
           <!-- Progress circle -->
           <circle
             cx="50"
@@ -46,12 +36,12 @@
         <text class="progress-text">{{ Math.round(progress) }}%</text>
       </view>
     </view>
-    
+
     <!-- Spinner Variant -->
     <view v-else-if="variant === 'spinner'" class="loading-spinner">
       <view class="spinner"></view>
     </view>
-    
+
     <!-- Loading Text -->
     <text v-if="text" class="loading-text" :class="{ 'with-margin': variant !== 'dots' }">
       {{ text }}
@@ -72,12 +62,12 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'dots',
   size: 'medium',
   text: '',
-  progress: 0
+  progress: 0,
 })
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/variables.scss';
+@import '@/style/variables.scss';
 
 .loading-animation {
   display: flex;
@@ -91,16 +81,16 @@ const props = withDefaults(defineProps<Props>(), {
 .loading-dots {
   display: flex;
   gap: $spacing-xs;
-  
+
   .dot {
     border-radius: 50%;
     background: $color-secondary;
     animation: loadingDot 1.4s ease-in-out infinite;
-    
+
     &:nth-child(1) {
       animation-delay: -0.32s;
     }
-    
+
     &:nth-child(2) {
       animation-delay: -0.16s;
     }
@@ -117,7 +107,7 @@ const props = withDefaults(defineProps<Props>(), {
   border-radius: 50%;
   animation: pulseSoft 2s $ease-custom infinite;
   filter: blur(1px);
-  
+
   // Add glow effect
   &::after {
     content: '';
@@ -179,7 +169,7 @@ const props = withDefaults(defineProps<Props>(), {
   color: $color-text-subtle;
   text-align: center;
   animation: fadeIn 0.6s $ease-custom;
-  
+
   &.with-margin {
     margin-top: $spacing-sm;
   }
@@ -188,31 +178,31 @@ const props = withDefaults(defineProps<Props>(), {
 // Size Variants
 .size-small {
   gap: $spacing-sm;
-  
+
   .dot {
     width: 8px;
     height: 8px;
   }
-  
+
   .loading-blob {
     width: 40px;
     height: 40px;
   }
-  
+
   .progress-circle {
     width: 60px;
     height: 60px;
   }
-  
+
   .spinner {
     width: 24px;
     height: 24px;
   }
-  
+
   .progress-text {
     font-size: $font-size-caption;
   }
-  
+
   .loading-text {
     font-size: $font-size-caption;
   }
@@ -223,26 +213,26 @@ const props = withDefaults(defineProps<Props>(), {
     width: 12px;
     height: 12px;
   }
-  
+
   .loading-blob {
     width: 80px;
     height: 80px;
   }
-  
+
   .progress-circle {
     width: 100px;
     height: 100px;
   }
-  
+
   .spinner {
     width: 40px;
     height: 40px;
   }
-  
+
   .progress-text {
     font-size: $font-size-body;
   }
-  
+
   .loading-text {
     font-size: $font-size-body;
   }
@@ -250,32 +240,32 @@ const props = withDefaults(defineProps<Props>(), {
 
 .size-large {
   gap: $spacing-lg;
-  
+
   .dot {
     width: 16px;
     height: 16px;
   }
-  
+
   .loading-blob {
     width: 120px;
     height: 120px;
   }
-  
+
   .progress-circle {
     width: 140px;
     height: 140px;
   }
-  
+
   .spinner {
     width: 60px;
     height: 60px;
     border-width: 4px;
   }
-  
+
   .progress-text {
     font-size: 20px;
   }
-  
+
   .loading-text {
     font-size: 18px;
   }
@@ -283,7 +273,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Animations
 @keyframes loadingDot {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0;
   }
@@ -294,7 +286,8 @@ const props = withDefaults(defineProps<Props>(), {
 }
 
 @keyframes pulseSoft {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -316,4 +309,4 @@ const props = withDefaults(defineProps<Props>(), {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
-</style> 
+</style>

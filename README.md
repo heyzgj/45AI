@@ -2,24 +2,38 @@
 
 A premium AI-powered image generation application for iOS and WeChat Mini Program, designed for young aesthetically-minded users in China.
 
-## 🎯 Project Overview
+## 🎯 Project Status: MVP Complete ✅
+
+**Current Phase**: Production-Ready MVP with Mock Services  
+**Last Updated**: January 9, 2025
 
 45AI provides a one-click AI portrait generation experience with professionally designed templates. Users upload a single selfie, select a template, and receive beautiful AI-generated portraits instantly.
 
-### Key Features
-- 🎨 Template-based image generation
-- 💳 Credit-based monetization system ("胶卷")
-- 🛡️ Content safety moderation
-- 📱 Cross-platform (iOS + WeChat Mini Program)
-- ✨ Premium UI with fluid animations
+### ✅ Implemented Features
+- 🎨 **Template-based image generation** - Working with Gemini Flash
+- 💳 **Credit-based monetization system** - Complete billing with mock payments
+- 🔐 **Authentication system** - WeChat login + development mock
+- 📱 **Cross-platform UI** - UniBest + wot-design-uni components
+- ✨ **Premium UI with animations** - Modern, responsive design
+- 📊 **User management** - Profiles, credits, transaction history
+- 🖼️ **Generation history** - View and download past results
 
 ## 🏗️ Architecture
 
-- **Frontend**: UniBest (uni-app) - Vue 3 based cross-platform framework
-- **Backend**: Go with Gin framework - High-performance API server
-- **Database**: MySQL 8.0 - User and transaction data
-- **AI Service**: Self-hosted ComfyUI on GCP - Image generation
+### Current (Development)
+- **Frontend**: UniBest (uni-app) + wot-design-uni - Vue 3 cross-platform
+- **Backend**: Go with Gin framework - RESTful API server
+- **Database**: SQLite (dev) / MySQL (production) - User and transaction data
+- **AI Service**: Gemini Flash (temporary) → ComfyUI (planned)
+- **Authentication**: WeChat OAuth + JWT tokens
+- **Payments**: Mock services (WeChat Pay + Apple IAP)
+
+### Production Target
 - **Infrastructure**: WeChat Cloud Hosting + GCP
+- **AI Service**: Self-hosted ComfyUI on GCP
+- **Database**: MySQL 8.0 with proper scaling
+- **Storage**: Cloud storage for generated images
+- **Payments**: Real WeChat Pay and Apple IAP integration
 
 ## 📁 Project Structure
 
@@ -33,33 +47,42 @@ A premium AI-powered image generation application for iOS and WeChat Mini Progra
 └── comfyui/          # AI service configurations
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start (Development)
 
 ### Prerequisites
 - Go 1.20+
 - Node.js 18+
-- MySQL 8.0
-- WeChat Developer Tools
-- Xcode (for iOS development)
+- WeChat Developer Tools (optional)
 
 ### Backend Setup
 ```bash
 cd backend
 go mod download
-cp .env.example .env
-# Configure your .env file
+# Uses SQLite by default - no additional setup needed
 go run cmd/api/main.go
+# Server starts on http://localhost:8080
 ```
 
 ### Frontend Setup
 ```bash
 cd frontend
 npm install
+# For H5 development (recommended)
+npm run dev:h5
 # For WeChat Mini Program
 npm run dev:mp-weixin
-# For iOS
-npm run dev:app-plus
 ```
+
+### Development Login
+Use the mock authentication code: `dev_mock_code`  
+Mock user: "月来公主" with 100 credits
+
+### Test the System
+1. Start backend: `cd backend && go run cmd/api/main.go`
+2. Start frontend: `cd frontend && npm run dev:h5`
+3. Open http://localhost:3000
+4. Login with `dev_mock_code`
+5. Browse templates and generate images!
 
 ## 📋 Project Management
 
@@ -67,11 +90,12 @@ The project uses a file-based task management system. Check `/project/project_st
 
 ## 📚 Documentation
 
-- [Product Requirements](docs/PRD.md)
-- [Architecture Guide](docs/ARCHITECTURE_GUIDE.md)
-- [Technical Specification](docs/TECH_SPEC.md)
-- [Style Guide](docs/STYLE_GUIDE.md)
-- [Test Plan](docs/TEST_PLAN.md)
+- [**Development Progress**](docs/DEVELOPMENT_PROGRESS.md) - Complete status summary
+- [Product Requirements](docs/PRD.md) - Feature specifications
+- [Architecture Guide](docs/ARCHITECTURE_GUIDE.md) - System design
+- [Technical Specification](docs/TECH_SPEC.md) - Implementation details
+- [Style Guide](docs/STYLE_GUIDE.md) - UI/UX guidelines
+- [Test Plan](docs/TEST_PLAN.md) - Testing strategy
 
 ## 🎨 Design Philosophy
 

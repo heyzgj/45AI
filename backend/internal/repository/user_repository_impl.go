@@ -16,8 +16,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *userRepositoryImpl) Create(ctx context.Context, user *model.User) error {
-	query := "INSERT INTO users (wechat_openid, credits) VALUES (?, ?)"
-	result, err := r.db.ExecContext(ctx, query, user.WechatOpenID, user.Credits)
+	query := "INSERT INTO users (wechat_openid, nickname, avatar_url, credits) VALUES (?, ?, ?, ?)"
+	result, err := r.db.ExecContext(ctx, query, user.WechatOpenID, user.Nickname, user.AvatarURL, user.Credits)
 	if err != nil {
 		return err
 	}
@@ -33,10 +33,13 @@ func (r *userRepositoryImpl) GetByID(ctx context.Context, id int64) (*model.User
 	query := "SELECT id, wechat_openid, nickname, avatar_url, credits, created_at, updated_at FROM users WHERE id = ?"
 	row := r.db.QueryRowContext(ctx, query, id)
 	user := &model.User{}
-	err := row.Scan(&user.ID, &user.WechatOpenID, &user.Nickname, &user.AvatarURL, &user.Credits, &user.CreatedAt, &user.UpdatedAt)
+	var nickname, avatarURL sql.NullString
+	err := row.Scan(&user.ID, &user.WechatOpenID, &nickname, &avatarURL, &user.Credits, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
+	user.Nickname = nickname.String
+	user.AvatarURL = avatarURL.String
 	return user, nil
 }
 
@@ -44,10 +47,13 @@ func (r *userRepositoryImpl) GetByWechatOpenID(ctx context.Context, openID strin
 	query := "SELECT id, wechat_openid, nickname, avatar_url, credits, created_at, updated_at FROM users WHERE wechat_openid = ?"
 	row := r.db.QueryRowContext(ctx, query, openID)
 	user := &model.User{}
-	err := row.Scan(&user.ID, &user.WechatOpenID, &user.Nickname, &user.AvatarURL, &user.Credits, &user.CreatedAt, &user.UpdatedAt)
+	var nickname, avatarURL sql.NullString
+	err := row.Scan(&user.ID, &user.WechatOpenID, &nickname, &avatarURL, &user.Credits, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
+	user.Nickname = nickname.String
+	user.AvatarURL = avatarURL.String
 	return user, nil
 }
 

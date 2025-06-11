@@ -8,6 +8,10 @@ type Response struct {
 	Meta    *Meta       `json:"meta,omitempty"`
 }
 
+// Type aliases for backward compatibility
+type ErrorResponse = Response
+type SuccessResponse = Response
+
 // ErrorInfo contains error details
 type ErrorInfo struct {
 	Code    string `json:"code"`

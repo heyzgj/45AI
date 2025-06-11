@@ -1,19 +1,21 @@
-import { createSSRApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-
+import '@/style/index.scss'
+import { VueQueryPlugin } from '@tanstack/vue-query'
 import 'uno.css'
-import 'wot-design-uni/dist/style.css'
-import './styles/index.scss'
+import { createSSRApp } from 'vue'
+
+import App from './App.vue'
+import { prototypeInterceptor, requestInterceptor, routeInterceptor } from './interceptors'
+import store from './store'
 
 export function createApp() {
   const app = createSSRApp(App)
-  const pinia = createPinia()
-  
-  app.use(pinia)
-  
+  app.use(store)
+  app.use(routeInterceptor)
+  app.use(requestInterceptor)
+  app.use(prototypeInterceptor)
+  app.use(VueQueryPlugin)
+
   return {
     app,
-    pinia,
   }
-} 
+}

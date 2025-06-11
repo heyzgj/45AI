@@ -43,8 +43,9 @@ func (h *authHandlerImpl) Refresh(c *gin.Context) {
 }
 
 func (h *authHandlerImpl) Logout(c *gin.Context) {
-	// Implementation for a future task
-	c.JSON(http.StatusNotImplemented, gin.H{"error": "not implemented"})
+	// For JWT-based authentication, logout is handled client-side
+	// The server just acknowledges the logout request
+	c.JSON(http.StatusOK, gin.H{"message": "logged out successfully"})
 }
 
 func (h *authHandlerImpl) GetProfile(c *gin.Context) {

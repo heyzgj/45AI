@@ -17,20 +17,24 @@ type GenerationService interface {
 	CheckContentSafety(ctx context.Context, imageData io.Reader) error
 	
 	// GetGenerationStatus retrieves the status of an ongoing generation
-	GetGenerationStatus(ctx context.Context, requestID string) (*GenerationStatus, error)
+	GetGenerationStatus(ctx context.Context, jobID string) (*GenerationStatus, error)
+	
+	// GetGenerationResult retrieves the result of a completed generation
+	GetGenerationResult(ctx context.Context, jobID string) (*GenerationResult, error)
 }
 
 // GenerationResult represents the result of an image generation
 type GenerationResult struct {
-	RequestID string   `json:"request_id"`
-	Images    []string `json:"images"`
-	Credits   int      `json:"credits_used"`
+	JobID    string `json:"job_id"`
+	ImageURL string `json:"image_url"`
+	Status   string `json:"status"`
 }
 
 // GenerationStatus represents the status of a generation request
 type GenerationStatus struct {
-	RequestID string `json:"request_id"`
-	Status    string `json:"status"` // "processing", "completed", "failed"
-	Progress  int    `json:"progress,omitempty"`
-	Error     string `json:"error,omitempty"`
+	JobID    string `json:"job_id"`
+	Status   string `json:"status"` // "pending", "processing", "completed", "failed"
+	Progress int    `json:"progress"`
+	ImageURL string `json:"image_url,omitempty"`
+	Error    string `json:"error,omitempty"`
 } 

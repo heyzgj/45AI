@@ -7,8 +7,6 @@ effort: S
 risk: Low
 dependencies: []
 assignee: CursorAgent
-created_at: {{YYYY-MM-DD}}
-updated_at: {{YYYY-MM-DD}}
 ---
 
 ### Description

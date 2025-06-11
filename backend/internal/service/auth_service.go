@@ -11,7 +11,7 @@ type AuthService interface {
 	LoginWithWechat(ctx context.Context, code string) (*model.User, string, error)
 	
 	// GenerateToken generates a new JWT for a given user ID
-	GenerateToken(userID uint) (string, error)
+	GenerateToken(userID int64) (string, error)
 	
 	// ValidateToken validates a JWT token and returns the user ID
 	ValidateToken(ctx context.Context, token string) (int64, error)

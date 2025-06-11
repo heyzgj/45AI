@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 	"github.com/45ai/backend/internal/model"
 	"github.com/45ai/backend/internal/repository"
-	"database/sql"
 )
 
 type generationServiceImpl struct {
@@ -15,6 +15,7 @@ type generationServiceImpl struct {
 	transactionRepo      repository.TransactionRepository
 	templateRepo         repository.TemplateRepository
 	comfyuiRepo          repository.ComfyUIRepository
+	generationRepo       repository.GenerationRepository
 }
 
 func NewGenerationService(
@@ -23,6 +24,7 @@ func NewGenerationService(
 	transactionRepo repository.TransactionRepository,
 	templateRepo repository.TemplateRepository,
 	comfyuiRepo repository.ComfyUIRepository,
+	generationRepo repository.GenerationRepository,
 ) GenerationService {
 	return &generationServiceImpl{
 		contentSafetyService: contentSafetyService,
@@ -30,6 +32,7 @@ func NewGenerationService(
 		transactionRepo:      transactionRepo,
 		templateRepo:         templateRepo,
 		comfyuiRepo:          comfyuiRepo,
+		generationRepo:       generationRepo,
 	}
 }
 
@@ -67,12 +70,13 @@ func (s *generationServiceImpl) GenerateImage(ctx context.Context, userID int64,
 	if err := s.userRepo.UpdateCredits(ctx, userID, -template.CreditCost); err != nil {
 		return nil, fmt.Errorf("failed to deduct credits: %w", err)
 	}
+	templateIDPtr := &template.ID
 	transaction := &model.Transaction{
 		UserID:           userID,
 		Type:             "generation",
 		Amount:           -template.CreditCost,
 		Description:      fmt.Sprintf("Used '%s' template", template.Name),
-		RelatedTemplateID: sql.NullInt64{Int64: int64(template.ID), Valid: true},
+		RelatedTemplateID: templateIDPtr,
 	}
 	if err := s.transactionRepo.Create(ctx, transaction); err != nil {
 		// This is a critical error, as the user has been charged but the transaction was not recorded.
@@ -80,9 +84,16 @@ func (s *generationServiceImpl) GenerateImage(ctx context.Context, userID int64,
 		return nil, fmt.Errorf("failed to create transaction: %w", err)
 	}
 
+	// For the synchronous version, we'll return the first image URL
+	var imageURL string
+	if len(imageURLs) > 0 {
+		imageURL = imageURLs[0]
+	}
+
 	return &GenerationResult{
-		Images:      imageURLs,
-		CreditsUsed: template.CreditCost,
+		JobID:    "sync-" + fmt.Sprintf("%d", time.Now().Unix()), // Temporary job ID for sync calls
+		ImageURL: imageURL,
+		Status:   "completed",
 	}, nil
 }
 
@@ -105,7 +116,38 @@ func (s *generationServiceImpl) CheckContentSafety(ctx context.Context, imageDat
 	return nil
 }
 
-func (s *generationServiceImpl) GetGenerationStatus(ctx context.Context, requestID string) (*GenerationStatus, error) {
-	// To be implemented in a future task
-	return nil, nil
+func (s *generationServiceImpl) GetGenerationStatus(ctx context.Context, jobID string) (*GenerationStatus, error) {
+	generation, err := s.generationRepo.GetByJobID(ctx, jobID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get generation: %w", err)
+	}
+
+	status := &GenerationStatus{
+		JobID:    generation.JobID,
+		Status:   generation.Status,
+		Progress: generation.Progress,
+		ImageURL: generation.ImageURL,
+		Error:    generation.Error,
+	}
+
+	return status, nil
+}
+
+func (s *generationServiceImpl) GetGenerationResult(ctx context.Context, jobID string) (*GenerationResult, error) {
+	generation, err := s.generationRepo.GetByJobID(ctx, jobID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get generation: %w", err)
+	}
+
+	if generation.Status != "completed" {
+		return nil, fmt.Errorf("generation not completed yet, status: %s", generation.Status)
+	}
+
+	result := &GenerationResult{
+		JobID:    generation.JobID,
+		ImageURL: generation.ImageURL,
+		Status:   generation.Status,
+	}
+
+	return result, nil
 } 

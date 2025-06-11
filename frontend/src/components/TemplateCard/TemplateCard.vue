@@ -1,32 +1,32 @@
 <template>
-  <view 
+  <view
     class="template-card card interactive"
-    :class="{ 'loading': loading, 'error': error }"
+    :class="{ loading: loading, error: error }"
     @click="handleClick"
   >
     <!-- Loading State -->
     <view v-if="loading" class="template-loading">
       <view class="loading-blob"></view>
     </view>
-    
+
     <!-- Error State -->
     <view v-else-if="error" class="template-error">
       <text class="error-icon">⚠️</text>
       <text class="error-text">Failed to load</text>
     </view>
-    
+
     <!-- Content -->
     <template v-else>
       <!-- Preview Image -->
       <view class="template-image-wrapper">
-        <image 
-          :src="template.preview_image_url" 
+        <image
+          :src="template.preview_image_url"
           class="template-image"
           mode="aspectFill"
           :lazy-load="true"
           @error="handleImageError"
         />
-        
+
         <!-- Hover Overlay -->
         <view class="template-overlay">
           <view class="overlay-content">
@@ -34,7 +34,7 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Template Info -->
       <view class="template-info">
         <text class="template-name">{{ template.name }}</text>
@@ -61,7 +61,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  loading: false
+  loading: false,
 })
 
 // State
@@ -71,8 +71,8 @@ const error = ref(false)
 const handleClick = () => {
   if (!props.loading && !error.value) {
     uni.navigateTo({
-      url: `/pages/template-detail/index?id=${props.template.id}`
-    });
+      url: `/pages/template-detail/index?id=${props.template.id}`,
+    })
   }
 }
 
@@ -82,7 +82,7 @@ const handleImageError = () => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/variables.scss';
+@import '@/style/variables.scss';
 
 .template-card {
   position: relative;
@@ -91,7 +91,7 @@ const handleImageError = () => {
   border-radius: $radius-md;
   background: $color-surface;
   transition: all $duration-fast $ease-custom;
-  
+
   &.loading,
   &.error {
     min-height: 360px;
@@ -99,21 +99,21 @@ const handleImageError = () => {
     align-items: center;
     justify-content: center;
   }
-  
+
   &:hover {
     .template-overlay {
       opacity: 1;
     }
-    
+
     .template-image {
       transform: scale(1.05);
     }
   }
-  
+
   &:active {
     transform: translateY(-4px) scale(1.02);
     box-shadow: $shadow-hover;
-    
+
     .template-overlay {
       opacity: 0.9;
     }
@@ -126,7 +126,7 @@ const handleImageError = () => {
   align-items: center;
   justify-content: center;
   padding: $spacing-xl;
-  
+
   .loading-blob {
     width: 60px;
     height: 60px;
@@ -143,13 +143,13 @@ const handleImageError = () => {
   align-items: center;
   justify-content: center;
   padding: $spacing-xl;
-  
+
   .error-icon {
     font-size: 32px;
     margin-bottom: $spacing-sm;
     opacity: 0.5;
   }
-  
+
   .error-text {
     font-size: $font-size-caption;
     color: $color-text-subtle;
@@ -160,7 +160,8 @@ const handleImageError = () => {
 .template-image-wrapper {
   position: relative;
   overflow: hidden;
-  height: 280px;
+  aspect-ratio: 3/4;
+  width: 100%;
   background: $color-bg;
 }
 
@@ -191,7 +192,7 @@ const handleImageError = () => {
   text-align: center;
   transform: translateY(10px);
   transition: transform $duration-fast $ease-custom;
-  
+
   .template-overlay:hover & {
     transform: translateY(0);
   }
@@ -215,7 +216,7 @@ const handleImageError = () => {
   font-weight: $font-weight-semibold;
   color: $color-text;
   margin-bottom: $spacing-xs;
-  
+
   // Truncate long names
   overflow: hidden;
   text-overflow: ellipsis;
@@ -233,7 +234,7 @@ const handleImageError = () => {
   font-size: $font-size-caption;
   color: $color-text-subtle;
   flex: 1;
-  
+
   // Limit to 2 lines
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -264,4 +265,4 @@ const handleImageError = () => {
     height: 320px;
   }
 }
-</style> 
+</style>

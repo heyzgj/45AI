@@ -1,21 +1,17 @@
--- Create transactions table
+-- Create transactions table (SQLite compatible)
 CREATE TABLE IF NOT EXISTS transactions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    type ENUM('purchase', 'generation') NOT NULL,
-    amount INT NOT NULL COMMENT 'Positive for purchases, negative for generation',
-    description VARCHAR(255),
-    external_payment_id VARCHAR(255),
-    related_template_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_user_id (user_id),
-    INDEX idx_type (type),
-    INDEX idx_created_at (created_at),
-    INDEX idx_external_payment_id (external_payment_id),
-    
-    CONSTRAINT fk_transactions_user FOREIGN KEY (user_id) 
-        REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_transactions_template FOREIGN KEY (related_template_id) 
-        REFERENCES templates(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('purchase', 'generation')),
+    amount INTEGER NOT NULL, -- Positive for purchases, negative for generation
+    description TEXT,
+    external_payment_id TEXT,
+    related_template_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indices
+CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
+CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX IF NOT EXISTS idx_transactions_external_payment_id ON transactions(external_payment_id); 

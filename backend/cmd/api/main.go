@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,13 +28,23 @@ func main() {
 	}
 
 	// Connect to database
-	db, err := database.NewConnection(cfg.Database)
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+	var db *database.DB
+	if cfg.App.Environment == "development" {
+		// Use SQLite for development
+		db, err = database.NewSQLiteConnection("./database.db")
+		if err != nil {
+			log.Fatal("Failed to connect to SQLite database:", err)
+		}
+	} else {
+		// Use MySQL for production
+		db, err = database.NewConnection(cfg.Database)
+		if err != nil {
+			log.Fatal("Failed to connect to database:", err)
+		}
 	}
 	defer db.Close()
 
-	// Run migrations
+	// Run migrations for all environments
 	migrationRunner := database.NewMigrationRunner(db.DB, "./migrations")
 	if err := migrationRunner.Migrate(); err != nil {
 		log.Fatal("Failed to run migrations:", err)
@@ -87,6 +98,28 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 	// Apply global middleware
 	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
+	router.Use(middleware.GetCORSMiddleware(cfg.App.Environment))
+
+	// Serve static files for generated images with security and performance headers
+	staticFileHandler := func(c *gin.Context) {
+		filename := c.Param("filename")
+		
+		// Security: Only allow PNG files
+		if len(filename) < 4 || filename[len(filename)-4:] != ".png" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
+			return
+		}
+		
+		// Set cache headers for better performance
+		c.Header("Cache-Control", "public, max-age=86400") // 24 hours
+		c.Header("Content-Type", "image/png")
+		
+		// Serve the file
+		c.File("uploads/generated/" + filename)
+	}
+	
+	router.GET("/uploads/generated/:filename", staticFileHandler)
+	router.HEAD("/uploads/generated/:filename", staticFileHandler)
 
 	// Health check endpoints
 	router.GET("/health", func(c *gin.Context) {
@@ -117,7 +150,22 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 	wechatRepo := repository.NewWechatRepository(cfg.WeChat)
 	templateRepo := repository.NewTemplateRepository(db.DB)
 	transactionRepo := repository.NewTransactionRepository(db.DB)
-	comfyuiRepo := repository.NewMockComfyUIRepository()
+	generationRepo := repository.NewGenerationRepository(db.DB)
+	
+	// Use Gemini for image generation in development, otherwise use the mock
+	var comfyuiRepo repository.ComfyUIRepository
+	if cfg.App.Environment == "development" {
+		var err error
+		comfyuiRepo, err = repository.NewGeminiRepository()
+		if err != nil {
+			log.Println("WARNING: Could not initialize Gemini Repository, falling back to mock. Error:", err)
+			comfyuiRepo = repository.NewMockComfyUIRepository()
+		} else {
+			log.Println("Using Gemini Repository for image generation.")
+		}
+	} else {
+		comfyuiRepo = repository.NewMockComfyUIRepository()
+	}
 
 	// Initialize services
 	authService := service.NewAuthService(cfg.JWT, userRepo, wechatRepo)
@@ -125,14 +173,19 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 	userService := service.NewUserService(userRepo)
 	transactionService := service.NewTransactionService(transactionRepo)
 	contentSafetyService := service.NewMockContentSafetyService()
-	queueService := service.NewInMemoryQueueService()
-	generationService := service.NewGenerationService(contentSafetyService, userRepo, transactionRepo, templateRepo, comfyuiRepo)
+	logger := slog.Default()
+	queueService := service.NewChannelQueueService(generationRepo)
+	generationService := service.NewGenerationService(contentSafetyService, userRepo, transactionRepo, templateRepo, comfyuiRepo, generationRepo)
+	creditService := service.NewCreditService(userRepo, transactionRepo, logger)
+	wechatPayService := service.NewMockWechatPayService(creditService, logger)
+	appleIAPService := service.NewMockAppleIAPService(creditService, logger)
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authService)
 	templateHandler := handler.NewTemplateHandler(templateService)
 	userHandler := handler.NewUserHandler(userService, transactionService)
 	generationHandler := handler.NewGenerationHandler(generationService, queueService)
+	paymentHandler := handler.NewPaymentHandler(wechatPayService, appleIAPService)
 
 	// Initialize middleware
 	authMiddleware := middleware.AuthMiddleware(authService)
@@ -143,6 +196,7 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/login", authHandler.Login)
+			auth.POST("/logout", authHandler.Logout)
 		}
 
 		templates := v1.Group("/templates")
@@ -163,8 +217,20 @@ func setupRouter(cfg *config.Config, db *database.DB) *gin.Engine {
 		generation.Use(authMiddleware)
 		{
 			generation.POST("", generationHandler.GenerateImage)
+			generation.GET("/:job_id/status", generationHandler.GetGenerationStatus)
+			generation.GET("/:job_id", generationHandler.GetGenerationResult)
+		}
+
+		billing := v1.Group("/billing")
+		billing.Use(authMiddleware)
+		{
+			billing.POST("/purchase", paymentHandler.SimplePurchase)
 		}
 	}
+
+	// Start queue workers
+	ctx := context.Background()
+	queueService.StartWorkers(ctx, 2, generationService) // Start 2 workers
 
 	return router
 } 

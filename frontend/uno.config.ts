@@ -1,62 +1,58 @@
-import { defineConfig } from 'unocss'
-import presetWeapp from 'unocss-preset-weapp'
-import { transformerClass } from 'unocss-preset-weapp/transformer'
+import { presetUni } from '@uni-helper/unocss-preset-uni'
+import {
+  defineConfig,
+  presetIcons,
+  presetAttributify,
+  transformerDirectives,
+  transformerVariantGroup,
+} from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetWeapp(),
+    presetUni(),
+    presetIcons({
+      scale: 1.2,
+      warn: true,
+      extraProperties: {
+        display: 'inline-block',
+        'vertical-align': 'middle',
+      },
+    }),
+    // 支持css class属性化
+    presetAttributify(),
   ],
   transformers: [
-    transformerClass(),
+    // 启用指令功能：主要用于支持 @apply、@screen 和 theme() 等 CSS 指令
+    transformerDirectives(),
+    // 启用 () 分组功能
+    // 支持css class组合，eg: `<div class="hover:(bg-gray-400 font-medium) font-(light mono)">测试 unocss</div>`
+    transformerVariantGroup(),
+  ],
+  shortcuts: [
+    {
+      center: 'flex justify-center items-center',
+    },
+  ],
+  rules: [
+    [
+      'p-safe',
+      {
+        padding:
+          'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)',
+      },
+    ],
+    ['pt-safe', { 'padding-top': 'env(safe-area-inset-top)' }],
+    ['pb-safe', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
   ],
   theme: {
     colors: {
-      primary: '#E89B93', // Dusty Rose
-      secondary: '#F3D9D7', // Powder Pink
-      bg: '#FCFBF9', // Alabaster
-      surface: '#FFFFFF', // White
-      text: '#4A4A4A', // Charcoal
-      'text-subtle': '#9B9B9B', // Stone Grey
+      /** 主题色，用法如: text-primary */
+      primary: 'var(--wot-color-theme,#0957DE)',
     },
-    fontFamily: {
-      sans: ['PingFang SC', 'Inter', 'sans-serif'],
-    },
-    animation: {
-      keyframes: {
-        'fade-in': '{from{opacity:0}to{opacity:1}}',
-        'slide-up': '{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}',
-        'pulse-soft': '{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.8;transform:scale(1.05)}}',
-      },
-      durations: {
-        'fade-in': '400ms',
-        'slide-up': '400ms',
-        'pulse-soft': '2s',
-      },
-      timingFns: {
-        'custom': 'cubic-bezier(0.6, 0.05, 0.4, 1)',
-      },
+    fontSize: {
+      /** 提供更小号的字体，用法如：text-2xs */
+      '2xs': ['20rpx', '28rpx'],
+      '3xs': ['18rpx', '26rpx'],
     },
   },
-  shortcuts: {
-    // Buttons
-    'btn-primary': 'px-6 py-3 bg-primary text-white rounded-full shadow-primary transition-all duration-300 active:scale-97',
-    'btn-secondary': 'px-6 py-3 border border-primary text-primary rounded-full transition-all duration-300',
-    
-    // Cards
-    'card': 'bg-surface border border-gray-100 rounded-16px shadow-soft p-4',
-    
-    // Animations
-    'animate-fade-in': 'animate-fade-in animate-duration-400 animate-ease-custom',
-    'animate-slide-up': 'animate-slide-up animate-duration-400 animate-ease-custom',
-    'animate-pulse-soft': 'animate-pulse-soft animate-duration-2000 animate-ease-custom animate-iteration-infinite',
-  },
-  rules: [
-    // Custom shadow for primary color
-    ['shadow-primary', { 'box-shadow': '0 4px 12px rgba(232, 155, 147, 0.3)' }],
-    ['shadow-soft', { 'box-shadow': '0 4px 24px rgba(74, 74, 74, 0.08)' }],
-    
-    // Custom scale for micro-interactions
-    ['scale-97', { transform: 'scale(0.97)' }],
-    ['scale-102', { transform: 'scale(1.02)' }],
-  ],
-}) 
+})

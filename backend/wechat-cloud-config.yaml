@@ -1,0 +1,90 @@
+# WeChat Cloud Hosting Configuration for 45AI Backend
+# This file configures the deployment settings for WeChat Cloud Hosting
+
+cloudbase:
+  framework: "go"
+  version: "1.21"
+  
+# Build configuration
+build:
+  commands:
+    - "go mod tidy"
+    - "go build -o main ./cmd/api"
+  
+# Runtime configuration
+runtime:
+  start_command: "./main"
+  environment: "production"
+  
+# Environment variables
+env:
+  - key: "GIN_MODE"
+    value: "release"
+  - key: "PORT"
+    value: "8080"
+  - key: "DB_HOST"
+    value: "${DB_HOST}"
+  - key: "DB_PORT"
+    value: "3306"
+  - key: "DB_NAME"
+    value: "${DB_NAME}"
+  - key: "DB_USER"
+    value: "${DB_USER}"
+  - key: "DB_PASSWORD"
+    value: "${DB_PASSWORD}"
+  - key: "JWT_SECRET"
+    value: "${JWT_SECRET}"
+  - key: "WECHAT_APP_ID"
+    value: "${WECHAT_APP_ID}"
+  - key: "WECHAT_APP_SECRET"
+    value: "${WECHAT_APP_SECRET}"
+  - key: "COMFYUI_API_URL"
+    value: "${COMFYUI_API_URL}"
+  - key: "TENCENT_SECRET_ID"
+    value: "${TENCENT_SECRET_ID}"
+  - key: "TENCENT_SECRET_KEY"
+    value: "${TENCENT_SECRET_KEY}"
+
+# Resource limits
+resources:
+  cpu: 1
+  memory: 512Mi
+
+# Health check configuration
+health_check:
+  path: "/health"
+  port: 8080
+  initial_delay_seconds: 30
+  period_seconds: 10
+  timeout_seconds: 5
+  failure_threshold: 3
+
+# Static file serving (if needed)
+static:
+  - source: "./public"
+    target: "/public"
+
+# Database configuration
+database:
+  type: "mysql"
+  version: "8.0"
+  
+# Scaling configuration
+scaling:
+  min_instances: 1
+  max_instances: 5
+  cpu_threshold: 70
+  memory_threshold: 80
+
+# Monitoring and logging
+logging:
+  level: "info"
+  format: "json"
+  
+# Security settings
+security:
+  https_redirect: true
+  cors_enabled: true
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100 

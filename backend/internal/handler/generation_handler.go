@@ -11,6 +11,8 @@ import (
 
 type GenerationHandler interface {
 	GenerateImage(c *gin.Context)
+	GetGenerationStatus(c *gin.Context)
+	GetGenerationResult(c *gin.Context)
 }
 
 type generationHandlerImpl struct {
@@ -55,16 +57,48 @@ func (h *generationHandlerImpl) GenerateImage(c *gin.Context) {
 		return
 	}
 
-	job := &service.Job{
-		UserID:     userID.(int64),
-		TemplateID: templateID,
-		ImageData:  imageDataBytes,
-	}
-
-	if err := h.queueService.AddJob(c.Request.Context(), job); err != nil {
+	// Add job to queue and get job ID
+	jobID, err := h.queueService.AddJob(c.Request.Context(), userID.(int64), templateID, imageDataBytes)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to add job to queue"})
 		return
 	}
 
-	c.JSON(http.StatusAccepted, gin.H{"request_id": "some-request-id"}) // Placeholder
+	c.JSON(http.StatusAccepted, gin.H{
+		"job_id": jobID,
+		"status": "pending",
+		"message": "Image generation job queued successfully",
+	})
+}
+
+func (h *generationHandlerImpl) GetGenerationStatus(c *gin.Context) {
+	jobID := c.Param("job_id")
+	if jobID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "job_id is required"})
+		return
+	}
+
+	status, err := h.service.GetGenerationStatus(c.Request.Context(), jobID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "job not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, status)
+}
+
+func (h *generationHandlerImpl) GetGenerationResult(c *gin.Context) {
+	jobID := c.Param("job_id")
+	if jobID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "job_id is required"})
+		return
+	}
+
+	result, err := h.service.GetGenerationResult(c.Request.Context(), jobID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 } 

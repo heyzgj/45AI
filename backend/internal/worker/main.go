@@ -1,3 +1,8 @@
+//go:build ignore
+// +build ignore
+
+// Deprecated standalone worker. Queue workers are now started inside the API server.
+
 package main
 
 import (
@@ -32,10 +37,13 @@ func main() {
 	templateRepo := repository.NewTemplateRepository(db.DB)
 	comfyuiRepo := repository.NewMockComfyUIRepository()
 
+	// Generation repository (for job status persistence)
+	generationRepo := repository.NewGenerationRepository(db.DB)
+
 	// Initialize services
 	contentSafetyService := service.NewMockContentSafetyService()
-	generationService := service.NewGenerationService(contentSafetyService, userRepo, transactionRepo, templateRepo, comfyuiRepo)
-	queueService := service.NewInMemoryQueueService()
+	generationService := service.NewGenerationService(contentSafetyService, userRepo, transactionRepo, templateRepo, comfyuiRepo, generationRepo)
+	queueService := service.NewChannelQueueService(generationRepo)
 
 	log.Println("Worker starting...")
 

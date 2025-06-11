@@ -1,140 +1,93 @@
-# 45AI Frontend - UniBest Application
+<p align="center">
+  <a href="https://github.com/feige996/unibest">
+    <img width="160" src="./src/static/logo.svg">
+  </a>
+</p>
 
-A cross-platform application built with UniBest (uni-app) for iOS and WeChat Mini Program.
+<h1 align="center">
+  <a href="https://github.com/feige996/unibest" target="_blank">unibest - 最好的 uniapp 开发框架</a>
+</h1>
 
-## 🎨 Design Philosophy
+<div align="center">
+旧仓库 codercup 进不去了，star 也拿不回来，这里也展示一下那个地址的 star.
 
-The UI follows a **minimalist, soft feminine aesthetic** with:
-- **Colors**: Dusty rose (#E89B93) and powder pink (#F3D9D7) accents
-- **Background**: Soft alabaster (#FCFBF9) instead of harsh white
-- **Typography**: Clean and generous with ample line-height
-- **Animations**: Fluid transitions with custom cubic-bezier easing
-- **Interactions**: Subtle micro-interactions for premium feel
+[![GitHub Repo stars](https://img.shields.io/github/stars/codercup/unibest?style=flat&logo=github)](https://github.com/codercup/unibest)
+[![GitHub forks](https://img.shields.io/github/forks/codercup/unibest?style=flat&logo=github)](https://github.com/codercup/unibest)
 
-## 🚀 Setup
+</div>
 
-### Prerequisites
-- Node.js 18+
-- pnpm 8+ (see SETUP_INSTRUCTIONS.md for installation)
-- WeChat Developer Tools (for Mini Program)
-- Xcode (for iOS development)
+<div align="center">
 
-### Quick Start
-```bash
-# Install pnpm if not already installed
-npm install -g pnpm
+[![GitHub Repo stars](https://img.shields.io/github/stars/feige996/unibest?style=flat&logo=github)](https://github.com/feige996/unibest)
+[![GitHub forks](https://img.shields.io/github/forks/feige996/unibest?style=flat&logo=github)](https://github.com/feige996/unibest)
+[![star](https://gitee.com/feige996/unibest/badge/star.svg?theme=dark)](https://gitee.com/feige996/unibest/stargazers)
+[![fork](https://gitee.com/feige996/unibest/badge/fork.svg?theme=dark)](https://gitee.com/feige996/unibest/members)
+![node version](https://img.shields.io/badge/node-%3E%3D18-green)
+![pnpm version](https://img.shields.io/badge/pnpm-%3E%3D7.30-green)
+![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/feige996/unibest)
+![GitHub License](https://img.shields.io/github/license/feige996/unibest)
 
-# Install dependencies
-pnpm install
+</div>
 
-# Run for different platforms
-pnpm dev:h5           # Web development
-pnpm dev:mp-weixin    # WeChat Mini Program
-pnpm dev:app-plus     # iOS App
-```
+`unibest` —— 最好的 `uniapp` 开发模板，由 `uniapp` + `Vue3` + `Ts` + `Vite5` + `UnoCss` + `wot-ui` + `z-paging` 构成，使用了最新的前端技术栈，无需依靠 `HBuilderX`，通过命令行方式运行 `web`、`小程序` 和 `App`（编辑器推荐 `VSCode`，可选 `webstorm`）。
 
-## 📁 Project Structure
+`unibest` 内置了 `约定式路由`、`layout布局`、`请求封装`、`请求拦截`、`登录拦截`、`UnoCSS`、`i18n多语言` 等基础功能，提供了 `代码提示`、`自动格式化`、`统一配置`、`代码片段` 等辅助功能，让你编写 `uniapp` 拥有 `best` 体验 （ `unibest 的由来`）。
 
-```
-src/
-├── pages/              # Application pages
-│   ├── index/         # Home page
-│   ├── gallery/       # Template gallery
-│   ├── generate/      # Generation flow
-│   ├── profile/       # User profile
-│   └── login/         # Login page
-├── components/         # Reusable components
-│   ├── TemplateCard/  # Template display card
-│   ├── CreditDisplay/ # Credit balance display
-│   └── LoadingAnimation/ # Custom loading states
-├── stores/            # Pinia state management
-│   ├── user.ts       # User state & auth
-│   └── templates.ts  # Templates data
-├── api/              # API client layer
-├── styles/           # Global styles
-│   ├── variables.scss # Design tokens
-│   └── animations.scss # Animation utilities
-└── utils/            # Helper functions
-```
+![](https://raw.githubusercontent.com/andreasbm/readme/master/screenshots/lines/rainbow.png)
 
-## 🎯 Key Features Implemented
+<p align="center">
+  <a href="https://unibest.tech/" target="_blank">📖 文档地址(new)</a>
+  <span style="margin:0 10px;">|</span>
+  <a href="https://feige996.github.io/hello-unibest/" target="_blank">📱 DEMO 地址</a>
+</p>
 
-1. **Refined Animations**
-   - Page transitions with fade + slide
-   - Staggered animations for lists
-   - Micro-interactions on all interactive elements
+---
 
-2. **Design System**
-   - UnoCSS configured with our brand colors
-   - Custom animation utilities
-   - Consistent spacing using 4px grid
+注意旧的地址 [codercup](https://github.com/codercup/unibest) 我进不去了，使用新的 [feige996](https://github.com/feige996/unibest)。PR和 issue 也请使用新地址，否则无法合并。
 
-3. **Cross-Platform Support**
-   - Optimized for both iOS and WeChat
-   - Platform-specific adjustments where needed
-   - Consistent experience across platforms
+## 平台兼容性
 
-## 🔧 Development Guidelines
+| H5  | IOS | 安卓 | 微信小程序 | 字节小程序 | 快手小程序 | 支付宝小程序 | 钉钉小程序 | 百度小程序 |
+| --- | --- | ---- | ---------- | ---------- | ---------- | ------------ | ---------- | ---------- |
+| √   | √   | √    | √          | √          | √          | √            | √          | √          |
 
-### Animation Standards
-- Use the custom easing: `cubic-bezier(0.6, 0.05, 0.4, 1)`
-- Page transitions: 400ms duration
-- Micro-interactions: 300ms duration
-- Always maintain >55 FPS
+注意每种 `UI框架` 支持的平台有所不同，详情请看各 `UI框架` 的官网，也可以看 `unibest` 文档。
 
-### Component Development
-- Follow Vue 3 Composition API
-- Use TypeScript for type safety
-- Implement loading and error states
-- Add proper accessibility attributes
+## ⚙️ 环境
 
-### Style Guidelines
-```scss
-// Use design tokens
-color: var(--color-primary); // #E89B93
+- node>=18
+- pnpm>=7.30
+- Vue Official>=2.1.10
+- TypeScript>=5.0
 
-// Consistent spacing
-padding: 16px; // 4px grid unit
+## &#x1F4C2; 快速开始
 
-// Soft shadows
-box-shadow: 0 4px 24px rgba(74, 74, 74, 0.08);
+执行 `pnpm create unibest` 创建项目
+执行 `pnpm i` 安装依赖
+执行 `pnpm dev` 运行 `H5`
+执行 `pnpm dev:mp` 运行 `微信小程序`
 
-// Button states
-&:active {
-  transform: scale(0.97);
-}
-```
+## 📦 运行（支持热更新）
 
-## 🌟 UniBest Features Used
+- web平台： `pnpm dev:h5`, 然后打开 [http://localhost:9000/](http://localhost:9000/)。
+- weixin平台：`pnpm dev:mp-weixin` 然后打开微信开发者工具，导入本地文件夹，选择本项目的`dist/dev/mp-weixin` 文件。
+- APP平台：`pnpm dev:app`, 然后打开 `HBuilderX`，导入刚刚生成的`dist/dev/app` 文件夹，选择运行到模拟器(开发时优先使用)，或者运行的安卓/ios基座。
 
-- **UnoCSS**: For utility-first styling
-- **Pinia**: State management
-- **Auto Import**: Components and composables
-- **TypeScript**: Full type support
-- **wot-ui**: Base component library (customized)
+## 🔗 发布
 
-## 📱 Platform-Specific Notes
+- web平台： `pnpm build:h5`，打包后的文件在 `dist/build/h5`，可以放到web服务器，如nginx运行。如果最终不是放在根目录，可以在 `manifest.config.ts` 文件的 `h5.router.base` 属性进行修改。
+- weixin平台：`pnpm build:mp-weixin`, 打包后的文件在 `dist/build/mp-weixin`，然后通过微信开发者工具导入，并点击右上角的“上传”按钮进行上传。
+- APP平台：`pnpm build:app`, 然后打开 `HBuilderX`，导入刚刚生成的`dist/build/app` 文件夹，选择发行 - APP云打包。
 
-### WeChat Mini Program
-- Uses native WeChat login SDK
-- Follows Mini Program design guidelines
-- Optimized for WeChat's rendering engine
+## 📄 License
 
-### iOS
-- Native-like transitions
-- Supports iOS-specific gestures
-- Optimized for various iPhone sizes
+[MIT](https://opensource.org/license/mit/)
 
-## 🧪 Testing
+Copyright (c) 2025 菲鸽
 
-```bash
-# Type checking
-pnpm type-check
+## 捐赠
 
-# Run in development with hot reload
-pnpm dev:mp-weixin
-```
-
-## 🚀 Deployment
-
-See main project README for deployment instructions.
+<p align='center'>
+<img alt="special sponsor appwrite" src="https://oss.laf.run/ukw0y1-site/pay/wepay.png" height="330" style="display:inline-block; height:330px;">
+<img alt="special sponsor appwrite" src="https://oss.laf.run/ukw0y1-site/pay/alipay.jpg" height="330" style="display:inline-block; height:330px; margin-left:10px;">
+</p>

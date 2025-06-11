@@ -1,0 +1,276 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🎯 Frontend Integration Issues & Solutions
+
+## 🚨 Common Frontend-Backend Integration Problems
+
+### 1. API Request Configuration
+**File:** [frontend/src/utils/request.ts](mdc:frontend/src/utils/request.ts)
+
+**Problems:**
+- Incorrect BASE_URL path construction
+- Missing environment variable handling
+- Wrong API versioning
+
+```typescript
+// ✅ CORRECT Configuration
+const isDev = process.env.NODE_ENV === 'development'
+const BASE_URL = isDev 
+    ? import.meta.env.VITE_SERVER_BASEURL || 'http://localhost:8080/api/v1'
+    : import.meta.env.VITE_SERVER_BASEURL
+
+// ❌ WRONG - Hardcoded without version
+const BASE_URL = 'http://localhost:8080/api'
+```
+
+### 2. Authentication Store Issues
+**File:** [frontend/src/store/auth.js](mdc:frontend/src/store/auth.js)
+
+**Common Mistakes:**
+- Wrong API import syntax
+- Incorrect response data access
+- Missing error handling
+
+```javascript
+// ✅ CORRECT API Usage
+import * as authApi from '../api/auth';
+
+const login = async (code) => {
+    try {
+        const response = await authApi.login({ code });
+        token.value = response.token;        // Not response.data.token
+        user.value = response.user;          // Not response.data.user
+        return true;
+    } catch (error) {
+        console.error('Login failed:', error);
+        return false;
+    }
+};
+
+// ❌ WRONG - Incorrect import and data access
+import { api } from '../api/auth';
+const response = await api.login({ code });
+token.value = response.data.token;  // Wrong path
+```
+
+### 3. WeChat Authentication in H5 Mode
+**File:** [frontend/src/pages/login/index.vue](mdc:frontend/src/pages/login/index.vue)
+
+**Problem:** WeChat APIs don't work in H5 development mode
+**Solution:** Use conditional compilation for mock authentication
+
+```vue
+<script setup>
+// ✅ CORRECT - Platform-specific authentication
+// #ifdef MP-WEIXIN
+// Real WeChat Mini Program login
+uni.login({
+    provider: 'weixin',
+    success: (res) => {
+        authStore.login(res.code);
+    }
+});
+// #endif
+
+// #ifdef H5
+// Mock authentication for development
+if (process.env.NODE_ENV === 'development') {
+    authStore.login('dev_mock_code');
+}
+// #endif
+</script>
+```
+
+### 4. Generation Store Configuration
+**File:** [frontend/src/store/generation.ts](mdc:frontend/src/store/generation.ts)
+
+**Problem:** Manual URL construction instead of using environment variables
+
+```typescript
+// ✅ CORRECT - Use environment variables
+const uploadUrl = import.meta.env.VITE_UPLOAD_BASEURL || 'http://localhost:8080/api/v1/generate';
+
+// ❌ WRONG - Manual construction
+const uploadUrl = `${baseUrl}/generate`;
+```
+
+### 5. API Endpoint Definition
+**File:** [frontend/src/api/auth.ts](mdc:frontend/src/api/auth.ts)
+
+**Common Issues:**
+- Wrong endpoint paths
+- Missing request/response types
+- Incorrect export syntax
+
+```typescript
+// ✅ CORRECT API Definition
+import { request } from '../utils/request';
+
+export const login = (data: { code: string }) => {
+    return request({
+        url: '/auth/login',  // Will be prefixed with /api/v1
+        method: 'POST',
+        data
+    });
+};
+
+// ❌ WRONG - Full path instead of relative
+export const login = (data: { code: string }) => {
+    return request({
+        url: '/api/v1/auth/login',  // Should be relative
+        method: 'POST',
+        data
+    });
+};
+```
+
+### 6. **NEW: H5 File Upload Issues** ⚠️
+**Problem:** `uni.uploadFile` fails in H5 mode with "Missing required args: 'url'" error
+**Root Cause:** uni.uploadFile has compatibility issues in H5/browser environment
+
+**Solution:** Use platform-specific upload methods
+
+```typescript
+// ✅ H5-Compatible File Upload
+// #ifdef H5
+await new Promise<void>((resolve, reject) => {
+    const formData = new FormData()
+    
+    // Convert filePath to File object
+    fetch(filePath)
+        .then(response => response.blob())
+        .then(blob => {
+            const file = new File([blob], 'upload.jpg', { type: 'image/jpeg' })
+            formData.append('image', file)
+            formData.append('template_id', templateId.toString())
+            
+            const xhr = new XMLHttpRequest()
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    uploadProgress.value = Math.round((event.loaded / event.total) * 100)
+                }
+            }
+            
+            xhr.onload = () => {
+                if (xhr.status === 202) {
+                    const response = JSON.parse(xhr.responseText)
+                    resolve(response)
+                } else {
+                    reject(new Error(`Status: ${xhr.status}`))
+                }
+            }
+            
+            xhr.open('POST', uploadUrl)
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+            xhr.send(formData)
+        })
+})
+// #endif
+
+// #ifndef H5
+// Use uni.uploadFile for mini-program
+uni.uploadFile({
+    url: uploadUrl,
+    filePath: filePath,
+    name: 'image',
+    formData: { template_id: templateId.toString() },
+    header: { 'Authorization': `Bearer ${token}` },
+    success: (res) => { /* handle success */ }
+})
+// #endif
+```
+
+### 7. **NEW: Navigation to Non-Existent Pages** ⚠️
+**Problem:** Trying to navigate to `/pages/result/index` that doesn't exist
+**Solution:** Either create the page or use existing pages
+
+```javascript
+// ❌ WRONG - Navigate to non-existent page
+uni.navigateTo({ url: `/pages/result/index?jobId=${jobId}` });
+
+// ✅ CORRECT - Show result on current page or navigate to existing page
+// Option 1: Show result on same page (immediate feedback)
+if (task?.status === 'completed') {
+    // Update UI state to show result
+    showResultState.value = true;
+}
+
+// Option 2: Navigate to existing page
+uni.switchTab({ url: '/pages/gallery/index' });
+```
+
+## 🔧 Environment Configuration
+
+### Frontend Environment Variables
+**File:** [frontend/.env](mdc:frontend/.env)
+```env
+# Development API URLs
+VITE_SERVER_BASEURL=http://localhost:8080/api/v1
+VITE_UPLOAD_BASEURL=http://localhost:8080/api/v1/generate
+
+# WeChat Configuration
+VITE_WX_APPID=your_wechat_app_id
+```
+
+### Platform-Specific Environment Variables
+```env
+# WeChat Mini Program URLs (Production)
+VITE_SERVER_BASEURL__WEIXIN_RELEASE=https://api.45ai.com/api/v1
+VITE_UPLOAD_BASEURL__WEIXIN_RELEASE=https://api.45ai.com/api/v1/generate
+```
+
+## 🐛 Debugging Frontend Issues
+
+### Check These First:
+1. **Browser Console:** Look for network errors and request failures
+2. **Network Tab:** Verify API calls are hitting correct endpoints
+3. **Environment Variables:** Check if VITE_ variables are loaded
+4. **API Response:** Log actual response structure vs expected
+5. **Platform Detection:** Verify H5 vs Mini Program conditional compilation
+
+### Debug Commands:
+```javascript
+// In browser console - check environment variables
+console.log(import.meta.env);
+
+// Check API configuration
+console.log('BASE_URL:', import.meta.env.VITE_SERVER_BASEURL);
+
+// Test API call manually
+fetch('http://localhost:8080/api/v1/templates')
+    .then(r => r.json())
+    .then(console.log);
+```
+
+## 🔥 Critical H5 vs Mini Program Differences
+
+### File Upload
+- **H5:** Use XMLHttpRequest + FormData + blob conversion
+- **Mini Program:** Use uni.uploadFile directly
+
+### File Selection
+- **H5:** Use HTML input[type="file"] or drag & drop
+- **Mini Program:** Use uni.chooseImage()
+
+### Storage Operations
+- **H5:** Limited album access, use download instead
+- **Mini Program:** Full album access via uni.saveImageToPhotosAlbum()
+
+### Environment Variables
+- **H5:** All variables available at build time
+- **Mini Program:** Platform-specific variables via `__PLATFORM__` suffix
+
+## ✅ Testing Checklist
+
+- [ ] API endpoints match backend routes exactly
+- [ ] Environment variables loaded correctly
+- [ ] Authentication works in both H5 and WeChat environments  
+- [ ] Error handling provides meaningful feedback
+- [ ] Response data accessed correctly (no .data wrapping issues)
+- [ ] Platform-specific code properly isolated with conditional compilation
+- [ ] File upload works in both H5 and Mini Program modes
+- [ ] Navigation targets existing pages
+- [ ] Generated results display properly

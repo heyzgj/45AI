@@ -1,0 +1,112 @@
+---
+description: when deal with mock data
+globs: 
+alwaysApply: false
+---
+# 🚨 PRODUCTION CLEANUP CHECKLIST - Mock Data & Development Code
+
+## ⚠️ CRITICAL: Remove Before Production Deployment
+
+### Backend Mock Authentication
+**File:** [backend/internal/service/auth_service_impl.go](mdc:backend/internal/service/auth_service_impl.go)
+```go
+// 🚨 REMOVE THIS ENTIRE BLOCK FOR PRODUCTION
+if code == "dev_mock_code" {
+    // Use a mock user for development
+    mockOpenID := "dev_user_12345"
+    user, err = s.userRepo.GetByWechatOpenID(ctx, mockOpenID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            // Create mock user if doesn't exist
+            user = &model.User{
+                WechatOpenID: mockOpenID,
+                Nickname:     "月来公主",
+                AvatarURL:    "https://via.placeholder.com/100",
+                Credits:      100, // Give some initial credits for testing
+            }
+            // ... rest of mock user creation
+        }
+    }
+}
+```
+
+### Database Configuration - Development SQLite
+**File:** [backend/cmd/api/main.go](mdc:backend/cmd/api/main.go)
+```go
+// 🚨 REMOVE SQLite BRANCH FOR PRODUCTION - Use MySQL only
+if cfg.App.Environment == "development" {
+    // Use SQLite for development
+    db, err = database.NewSQLiteConnection("./database.db")
+} else {
+    // Use MySQL for production
+    db, err = database.NewConnection(cfg.Database)
+}
+```
+
+**File:** [backend/pkg/database/sqlite.go](mdc:backend/pkg/database/sqlite.go)
+- 🚨 **ENTIRE FILE** - Remove SQLite connection logic for production
+
+### Migration Bypass for Development
+**File:** [backend/cmd/api/main.go](mdc:backend/cmd/api/main.go)
+```go
+// 🚨 REMOVE CONDITION - Always run migrations in production
+if cfg.App.Environment != "development" {
+    migrationRunner := database.NewMigrationRunner(db.DB, "./migrations")
+    if err := migrationRunner.Migrate(); err != nil {
+        log.Fatal("Failed to run migrations:", err)
+    }
+}
+```
+
+### Frontend Mock Authentication
+**File:** [frontend/src/pages/login/index.vue](mdc:frontend/src/pages/login/index.vue)
+```javascript
+// 🚨 REMOVE H5 MOCK AUTHENTICATION BLOCK
+// #ifdef H5
+// Use mock code for development
+authStore.login('dev_mock_code');
+// #endif
+```
+
+### Manual Database Setup
+**Files to Remove:**
+- `backend/database.db` - SQLite database file
+- Manual table creation commands used in terminal
+- Sample template data inserted manually
+
+### Environment Variables to Update
+**File:** [backend/.env](mdc:backend/.env)
+```env
+# 🚨 UPDATE FOR PRODUCTION
+DB_HOST=localhost          # → Production MySQL host
+DB_PORT=3306              # → Production MySQL port  
+DB_USER=root              # → Production MySQL user
+DB_PASSWORD=              # → Production MySQL password
+DB_NAME=45ai_db           # → Production database name
+
+# 🚨 UPDATE WITH REAL WECHAT CREDENTIALS
+WECHAT_APP_ID=wx_dev_app_id       # → Real WeChat App ID
+WECHAT_APP_SECRET=wx_dev_app_secret # → Real WeChat App Secret
+
+# 🚨 UPDATE WITH REAL API KEYS
+GEMINI_API_KEY=AIzaSyC1XThTfsv3kiBP7sg4w9OZUQbrypug_MQ # → Real Gemini API Key
+```
+
+## 🔄 Production Deployment Steps
+
+1. **Remove all mock authentication code**
+2. **Switch to MySQL database only**
+3. **Enable migrations for all environments**
+4. **Update environment variables with real credentials**
+5. **Remove SQLite dependencies and files**
+6. **Test with real WeChat Mini Program environment**
+7. **Verify all API endpoints work with real authentication**
+
+## 🧪 Testing Checklist
+
+- [ ] Real WeChat login works
+- [ ] MySQL database connections stable
+- [ ] All migrations run successfully
+- [ ] No mock users in production database
+- [ ] Environment variables properly configured
+- [ ] Frontend uses real WeChat authentication flow

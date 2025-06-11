@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-	"net/http"
+	"strings"
 	"time"
 
 	"github.com/45ai/backend/internal/config"
@@ -28,22 +29,56 @@ func NewAuthService(cfg config.JWTConfig, userRepo repository.UserRepository, we
 }
 
 func (s *authServiceImpl) LoginWithWechat(ctx context.Context, code string) (*model.User, string, error) {
-	// Exchange code for openid and session_key
-	wechatResp, err := s.wechatRepo.Code2Session(code)
-	if err != nil {
-		return nil, "", fmt.Errorf("failed to exchange wechat code: %w", err)
-	}
-
-	// Find or create user
-	user, err := s.userRepo.GetByWechatOpenID(ctx, wechatResp.OpenID)
-	if err != nil {
-		// If user not found, create a new one
-		user = &model.User{
-			WechatOpenID: wechatResp.OpenID,
-			Credits:      0, // Initial credits
+	var user *model.User
+	var err error
+	
+	// Check for development mock codes
+	if code == "dev_mock_code" || strings.HasPrefix(code, "test_") {
+		// Mock authentication for development
+		mockOpenID := "mock_openid_" + code
+		
+		// Find or create mock user
+		user, err = s.userRepo.GetByWechatOpenID(ctx, mockOpenID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// Create a new mock user
+				user = &model.User{
+					WechatOpenID: mockOpenID,
+					Nickname:     "Mock User",
+					AvatarURL:    "/static/default-avatar.png",
+					Credits:      50, // Give new users 50 free credits
+				}
+				if createErr := s.userRepo.Create(ctx, user); createErr != nil {
+					return nil, "", fmt.Errorf("failed to create mock user: %w", createErr)
+				}
+			} else {
+				return nil, "", fmt.Errorf("failed to get mock user: %w", err)
+			}
 		}
-		if err := s.userRepo.Create(ctx, user); err != nil {
-			return nil, "", fmt.Errorf("failed to create user: %w", err)
+	} else {
+		// Use real WeChat API for production codes
+		wechatResp, err := s.wechatRepo.Code2Session(code)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to exchange wechat code: %w", err)
+		}
+
+		// Find or create user
+		user, err = s.userRepo.GetByWechatOpenID(ctx, wechatResp.OpenID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// If user not found, create a new one with default credits
+				user = &model.User{
+					WechatOpenID: wechatResp.OpenID,
+					Nickname:     wechatResp.UnionID, // Use WeChat provided data
+					AvatarURL:    "",                 // Will be updated from WeChat user info if available
+					Credits:      50,                 // Give new users 50 free credits
+				}
+				if createErr := s.userRepo.Create(ctx, user); createErr != nil {
+					return nil, "", fmt.Errorf("failed to create user: %w", createErr)
+				}
+			} else {
+				return nil, "", fmt.Errorf("failed to get user: %w", err)
+			}
 		}
 	}
 
@@ -67,7 +102,7 @@ func (s *authServiceImpl) GetUserFromToken(ctx context.Context, token string) (*
 }
 
 // GenerateToken generates a new JWT for a given user ID
-func (s *authServiceImpl) GenerateToken(userID uint) (string, error) {
+func (s *authServiceImpl) GenerateToken(userID int64) (string, error) {
 	claims := jwt.MapClaims{
 		"sub": userID,
 		"exp": time.Now().Add(s.cfg.Expiry).Unix(),

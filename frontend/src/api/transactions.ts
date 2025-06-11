@@ -3,12 +3,12 @@
  */
 
 import { get, post } from '@/utils/request'
-import type { 
+import type {
   GetUserCreditsResponse,
   PurchaseCreditsRequest,
   PurchaseCreditsResponse,
   GetTransactionsRequest,
-  GetTransactionsResponse
+  GetTransactionsResponse,
 } from '@/types/api'
 
 // Get user credits
@@ -28,10 +28,10 @@ export const getCreditPackages = () => {
 
 // Get transaction history
 export const getTransactions = (params?: GetTransactionsRequest) => {
-  return get<GetTransactionsResponse>('/transactions', params)
+  return get<GetTransactionsResponse>('/me/transactions', params)
 }
 
 // Get transaction details
 export const getTransactionById = (id: string) => {
-  return get(`/transactions/${id}`)
-} 
+  return get(`/me/transactions/${id}`)
+}

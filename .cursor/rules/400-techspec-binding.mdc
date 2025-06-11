@@ -25,7 +25,7 @@ When a change request is received, I must follow this precise sequence:
    - Inform the user about which documents have been updated.
 
 **3. Trigger the Project Engine for Intelligent Re-planning:**
-   - After updating the documents, I will explicitly call the `000-project-engine` rule.
+   - After updating the documents, I will explicitly call the `000-ini-breakdown` rule.
    - **Intelligent Diffing:** The engine's re-planning process is not a blind overwrite. It will:
      a. Scan the new/updated docs.
      b. Compare them against the existing tasks in `/project/tasks/`.

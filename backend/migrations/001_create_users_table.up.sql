@@ -1,13 +1,14 @@
--- Create users table
+-- Create users table (SQLite compatible)
 CREATE TABLE IF NOT EXISTS users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    wechat_openid VARCHAR(255) NOT NULL,
-    nickname VARCHAR(255),
-    avatar_url VARCHAR(1024),
-    credits INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
-    UNIQUE INDEX idx_wechat_openid (wechat_openid),
-    INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    wechat_openid TEXT NOT NULL UNIQUE,
+    nickname TEXT,
+    avatar_url TEXT,
+    credits INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indices
+CREATE INDEX IF NOT EXISTS idx_users_wechat_openid ON users(wechat_openid);
+CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at); 

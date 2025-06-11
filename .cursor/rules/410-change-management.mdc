@@ -10,7 +10,7 @@ globs: *
 # Change Management (New Requirements & Refactoring)
 
 ## Context
-- **When to apply:** If the user introduces a **new feature**, changes a requirement in the PRD, or requests a major **refactor** of existing code/architecture mid-project.
+- **When to apply:** If the user introduces a **new feature**, changes a requirement in the PRD/tech spec/architecture, or requests a major **refactor** of existing code/architecture mid-project.
 - **Goal:** Adapt the task plan and documentation to incorporate the changes, ensuring the project remains coherent and up-to-date.
 
 ## Requirements

@@ -2,17 +2,17 @@
  * Authentication API
  */
 
-import { post } from '@/utils/request'
+import { post, get } from '@/utils/request'
 import type { LoginRequest, LoginResponse, User } from '@/types/api'
 
 // WeChat login
 export const login = (data: LoginRequest) => {
-  return post<LoginResponse>('/auth/wechat/login', data)
+  return post<LoginResponse>('/auth/login', data)
 }
 
 // Get current user info
 export const getUserInfo = () => {
-  return post<User>('/auth/me')
+  return get<User>('/me')
 }
 
 // Refresh token
@@ -23,4 +23,4 @@ export const refreshToken = (refreshToken: string) => {
 // Logout
 export const logout = () => {
   return post('/auth/logout')
-} 
+}
