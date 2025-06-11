@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-06-11T11:14:39.481Z",
+  "platform": "h5",
+  "totalTests": 10,
+  "passedTests": 9,
+  "failedTests": 1,
+  "results": [
+    {
+      "name": "Softer Visual Style Applied",
+      "category": "Visual Style Consistency",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.489Z"
+    },
+    {
+      "name": "Bottom Navigation Minimalist Design",
+      "category": "UI/UX Refinements",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.490Z"
+    },
+    {
+      "name": "Template Card Consistency",
+      "category": "UI/UX Refinements",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.490Z"
+    },
+    {
+      "name": "Component Style Softening",
+      "category": "Visual Style Consistency",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.490Z"
+    },
+    {
+      "name": "Token Refresh Flow Fixed",
+      "category": "Authentication Flow",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.490Z"
+    },
+    {
+      "name": "Page Existence Validation",
+      "category": "Navigation & Layout",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.490Z"
+    },
+    {
+      "name": "Template Data Consistency",
+      "category": "UI/UX Refinements",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.491Z"
+    },
+    {
+      "name": "Purchase Page Grid Layout",
+      "category": "UI/UX Refinements",
+      "status": "FAILED",
+      "error": "Purchase page still allows deselection (should be radio behavior)",
+      "timestamp": "2025-06-11T11:14:39.492Z"
+    },
+    {
+      "name": "Profile Username Overflow Fix",
+      "category": "UI/UX Refinements",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.492Z"
+    },
+    {
+      "name": "H5 Platform Compatibility",
+      "category": "UI/UX Refinements",
+      "status": "PASSED",
+      "timestamp": "2025-06-11T11:14:39.492Z"
+    }
+  ],
+  "successRate": "90.0%",
+  "summary": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1,
+    "platform": "h5"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#FCFBF9"
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^fg-(.*)": "@/components/fg-$1/fg-$1.vue",
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
+      "^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)": "z-paging/components/z-paging$1/z-paging$1.vue"
+    }
+  },
+  "tabBar": {
+    "color": "#9B9B9B",
+    "selectedColor": "#E89B93",
+    "backgroundColor": "#FCFBF9",
+    "borderStyle": "black",
+    "height": "56px",
+    "fontSize": "14px",
+    "list": [
+      {
+        "pagePath": "pages/gallery/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "path": "pages/gallery/index",
+      "type": "home"
+    },
+    {
+      "path": "pages/history/index",
+      "type": "page"
+    },
+    {
+      "path": "pages/login/index",
+      "type": "page"
+    },
+    {
+      "path": "pages/profile/index",
+      "type": "page"
+    },
+    {
+      "path": "pages/purchase/index",
+      "type": "page"
+    },
+    {
+      "path": "pages/template-detail/index",
+      "type": "page"
+    },
+    {
+      "path": "pages/generate/index",
+      "type": "page"
+    }
+  ],
+  "subPackages": []
+}
